@@ -1,0 +1,54 @@
+@if(isLoading()){
+  <div class="flex justify-center items-center h-64">
+     <div class="loader animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-rosa"></div>
+  </div>
+} @else {
+  <!-- Contenedor del feed con un ancho máximo y centrado -->
+  <div class="max-w-2xl mx-auto space-y-8">
+
+    <!-- Usamos @for para iterar sobre la señal 'posts' del archivo .ts -->
+    @for(post of posts(); track post._id) {
+      <div class="bg-white rounded-xl shadow-md overflow-hidden animate-fade-in">
+        <!-- Encabezado del Post con nombre de usuario -->
+        <div class="p-4 flex items-center space-x-3">
+          <img class="h-10 w-10 rounded-full object-cover"
+               [src]="'https://placehold.co/100x100/' + (post.username.length % 2 === 0 ? 'e91e63' : '004d40') + '/white?text=' + post.username.charAt(0).toUpperCase()"
+               [alt]="post.username">
+          <div class="font-bold text-gray-800">{{ post.username }}</div>
+        </div>
+
+        <!-- Imagen del Post -->
+        <img class="w-full h-auto" [src]="post.image_url" [alt]="'Foto de ' + post.username">
+
+        <!-- Sección de Acciones y Descripción -->
+        <div class="p-4">
+          <!-- Botón de Like -->
+          <div class="flex items-center space-x-4">
+            <button (click)="likePost(post._id)" class="flex items-center space-x-2 text-gray-600 hover:text-rosa transition-colors">
+              <!-- El ícono cambia de color si el usuario actual dio like -->
+              <svg class="w-6 h-6" [class.text-rosa]="post.likes.includes(currentUserId)" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="font-semibold">{{ post.likes.length }}</span>
+            </button>
+          </div>
+
+          <!-- Descripción del Post -->
+          <p class="mt-2 text-gray-700">
+            <span class="font-semibold text-gray-900">{{ post.username }}</span> {{ post.description }}
+          </p>
+        </div>
+      </div>
+    } @empty {
+      <!-- Mensaje que se muestra si no hay posts -->
+      <div class="text-center text-gray-500 py-16">
+        <p>No hay publicaciones para mostrar.</p>
+        <p>¡Sé el primero en <a routerLink="/upload" class="text-rosa font-semibold hover:underline">subir una foto</a>!</p>
+      </div>
+    }
+  </div>
+}
+
+@if(apiError()){
+  <p class="mt-4 text-center text-red-500">{{ apiError() }}</p>
+}

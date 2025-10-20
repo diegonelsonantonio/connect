@@ -1,0 +1,120 @@
+<!-- Contenedor principal con centrado y diseño de tarjeta -->
+<div
+  class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-lg p-8 animate-fade-in"
+>
+  <!-- Selector para cambiar entre Login y Registro -->
+  <div class="flex justify-center mb-6 border-b-2">
+    <button
+      (click)="authMode.set('login')"
+      [class.border-rosa]="authMode() === 'login'"
+      [class.text-rosa]="authMode() === 'login'"
+      class="px-6 py-2 focus:outline-none border-b-2 font-semibold transition-colors duration-300"
+    >
+      Login
+    </button>
+    <button
+      (click)="authMode.set('register')"
+      [class.border-rosa]="authMode() === 'register'"
+      [class.text-rosa]="authMode() === 'register'"
+      class="px-6 py-2 focus:outline-none border-b-2 font-semibold transition-colors duration-300"
+    >
+      Registro
+    </button>
+  </div>
+
+  <!-- Título dinámico -->
+  <h2 class="text-2xl font-bold text-center text-marino mb-6">
+    {{ authMode() === "login" ? "Bienvenido de Vuelta" : "Crea tu Cuenta" }}
+  </h2>
+
+  <!-- Formulario (manejado por ngModel del archivo .ts) -->
+  <form (submit)="handleAuthSubmit()" class="space-y-4">
+    <!-- Campo de Username (solo para registro) -->
+    @if(authMode() === 'register') {
+    <div>
+      <label for="username" class="block text-sm font-medium text-gray-700"
+        >Nombre de Usuario</label
+      >
+      <input
+        [(ngModel)]="authForm.username"
+        id="username"
+        name="username"
+        type="text"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rosa focus:border-rosa"
+      />
+    </div>
+    }
+
+    <!-- Campo de Email (solo para registro) -->
+    @if(authMode() === 'register') {
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700"
+        >Email</label
+      >
+      <input
+        [(ngModel)]="authForm.email"
+        id="email"
+        name="email"
+        type="email"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rosa focus:border-rosa"
+      />
+    </div>
+    }
+
+    <!-- Campo de Username para login -->
+    @if(authMode() === 'login') {
+    <div>
+      <label
+        for="username-login"
+        class="block text-sm font-medium text-gray-700"
+        >Nombre de Usuario</label
+      >
+      <input
+        [(ngModel)]="authForm.username"
+        id="username-login"
+        name="username-login"
+        type="text"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rosa focus:border-rosa"
+      />
+    </div>
+    }
+
+    <!-- Campo de Contraseña -->
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700"
+        >Contraseña</label
+      >
+      <input
+        [(ngModel)]="authForm.password"
+        id="password"
+        name="password"
+        type="password"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rosa focus:border-rosa"
+      />
+    </div>
+
+    <!-- Botón de envío -->
+    <button
+      type="submit"
+      [disabled]="isLoading()"
+      class="w-full bg-rosa text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rosa disabled:bg-gray-400"
+    >
+      {{
+        isLoading()
+          ? "Cargando..."
+          : authMode() === "login"
+          ? "Entrar"
+          : "Registrarse"
+      }}
+    </button>
+  </form>
+
+  <!-- Mensaje de error -->
+  @if(apiError()){
+  <p class="mt-4 text-center text-red-500 font-medium">{{ apiError() }}</p>
+  }
+</div>
