@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Renderer2, Inject } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header.component';
 import { FooterComponent } from './footer.component';
@@ -18,4 +18,19 @@ import { FooterComponent } from './footer.component';
     </div>
   `
 })
-export class LayoutComponent {}
+export class LayoutComponent implements OnInit, OnDestroy {
+  constructor(
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private document: Document
+  ) {}
+
+  ngOnInit() {
+    // Agregar clase has-header al body cuando el layout se carga
+    this.renderer.addClass(this.document.body, 'has-header');
+  }
+
+  ngOnDestroy() {
+    // Remover clase has-header al body cuando el layout se destruye
+    this.renderer.removeClass(this.document.body, 'has-header');
+  }
+}
