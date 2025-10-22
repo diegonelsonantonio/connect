@@ -28,9 +28,9 @@ import { AuthService } from "../../services/auth.service";
             <a
               routerLink="/home"
               routerLinkActive="text-yellow-300"
-              class="hover:text-yellow-300 transition-colors duration-200"
+              class="hover:text-yellow-300 transition-colors duration-200" style="font-size:25px"
             >
-              Home
+              HOME
             </a>
           </nav>
 
