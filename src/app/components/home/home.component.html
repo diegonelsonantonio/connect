@@ -18,12 +18,24 @@
         </div>
 
         <!-- Imagen del Post -->
-        <img class="w-full h-auto" [src]="post.image_url" [alt]="'Foto de ' + post.username">
+        <div class="relative cursor-pointer group" (click)="openImageModal(post)">
+          <img class="w-full h-auto transition-all duration-200 group-hover:brightness-95" 
+               [src]="post.image_url" 
+               [alt]="'Foto de ' + post.username">
+          <!-- Overlay de hover muy sutil -->
+          <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-200 flex items-center justify-center">
+            <div class="opacity-0 group-hover:opacity-80 transition-opacity duration-200">
+              <svg class="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
 
         <!-- Sección de Acciones y Descripción -->
         <div class="p-4">
-          <!-- Botón de Like -->
-          <div class="flex items-center space-x-4">
+          <!-- Botones de Like y Comentarios -->
+          <div class="flex items-center space-x-4 mb-3">
             <button (click)="likePost(post._id)" class="flex items-center space-x-2 text-gray-600 hover:text-rosa transition-colors">
               <!-- El ícono cambia de color si el usuario actual dio like -->
               <svg class="w-6 h-6" [class.text-rosa]="post.likes.includes(currentUserId)" fill="currentColor" viewBox="0 0 20 20">
@@ -31,12 +43,55 @@
               </svg>
               <span class="font-semibold">{{ post.likes.length }}</span>
             </button>
+            
+            <button (click)="toggleComments(post._id)" class="flex items-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+              <span class="font-semibold">{{ post.comments.length || 0 }}</span>
+            </button>
           </div>
 
           <!-- Descripción del Post -->
-          <p class="mt-2 text-gray-700">
+          <p class="mb-3 text-gray-700">
             <span class="font-semibold text-gray-900">{{ post.username }}</span> {{ post.description }}
           </p>
+
+          <!-- Sección de Comentarios -->
+          @if(showComments[post._id]) {
+            <div class="border-t pt-3">
+              <!-- Comentarios existentes -->
+              @if(post.comments && post.comments.length > 0) {
+                <div class="space-y-2 mb-3">
+                  @for(comment of post.comments; track comment.comment_id) {
+                    <div class="flex space-x-2">
+                      <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs font-bold text-gray-600">{{ comment.username.charAt(0).toUpperCase() }}</span>
+                      </div>
+                      <div class="flex-1">
+                        <span class="font-semibold text-sm text-gray-900">{{ comment.username }}</span>
+                        <span class="text-sm text-gray-700 ml-1">{{ comment.text }}</span>
+                        <p class="text-xs text-gray-500 mt-1">{{ formatDate(comment.createdAt) }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Formulario para agregar comentario -->
+              <form (ngSubmit)="addComment(post._id)" class="flex space-x-2">
+                <input [(ngModel)]="newComments[post._id]" 
+                       name="comment-{{post._id}}"
+                       placeholder="Agregar un comentario..." 
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-rosa focus:border-transparent">
+                <button type="submit" 
+                        [disabled]="!newComments[post._id] || !newComments[post._id].trim()"
+                        class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-medium hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+                  Enviar
+                </button>
+              </form>
+            </div>
+          }
         </div>
       </div>
     } @empty {
@@ -52,3 +107,13 @@
 @if(apiError()){
   <p class="mt-4 text-center text-red-500">{{ apiError() }}</p>
 }
+
+<!-- Modal de imagen -->
+<app-image-modal
+  [isOpen]="showImageModal"
+  [imageUrl]="modalImageUrl"
+  [imageAlt]="modalImageAlt"
+  [username]="modalUsername"
+  [description]="modalDescription"
+  (close)="closeImageModal()">
+</app-image-modal>

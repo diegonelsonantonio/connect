@@ -9,7 +9,7 @@ import { AuthService } from "../../services/auth.service";
   imports: [CommonModule, RouterModule],
   template: `
     <header
-      class="bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
+      class="bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg header-fixed"
     >
       <div class="container mx-auto px-4 py-3">
         <div class="flex items-center justify-between">
@@ -28,9 +28,9 @@ import { AuthService } from "../../services/auth.service";
             <a
               routerLink="/home"
               routerLinkActive="text-yellow-300"
-              class="hover:text-yellow-300 transition-colors duration-200"
+              class="hover:text-yellow-300 transition-colors duration-200" style="font-size:25px"
             >
-              Home
+              HOME
             </a>
           </nav>
 
